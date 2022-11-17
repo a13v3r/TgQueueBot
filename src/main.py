@@ -59,6 +59,18 @@ def callback_inline(call):
             command.do_inline_create_queue(1)
         elif call.data[:len(answer := CALLBACK_INLINE_GROUP_NORMAL)] == answer:
             command.do_inline_create_queue(0)
+        elif call.data[:len(answer := CALLBACK_INLINE_QUEUE_SHUFFLE)] == answer:
+            command.create_queue_from_msg(1)
+        elif call.data[:len(answer := CALLBACK_INLINE_QUEUE_NORMAL)] == answer:
+            command.create_queue_from_msg(0)
+        elif call.data[:len(answer := CALLBACK_INLINE_QUEUE_PRIORITY_SETTINGS)] == answer:
+            command.priority_settings()
+        elif call.data[:len(answer := CALLBACK_INLINE_QUEUE_ADD)] == answer:
+            args = call.data.split('_')
+            command.add_to_queue_inline(int(args[1]),int(args[2]))
+        elif call.data[:len(answer := CALLBACK_INLINE_QUEUE_PRIORITY_START)] == answer:
+            command.queue_start(int(call.data[len(answer)]))
+
 
 
 @bot.inline_handler(lambda query: len(query.query) == 0)

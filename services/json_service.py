@@ -77,14 +77,53 @@ def del_group(user_id, group_name):
             return "Вы не создали не одной группы!"
 
 
-def set_start_queue_position(user_id, shuffled_group):
+def set_start_queue_position(message_id, shuffled_group):
     with open(path_to_msg, "r") as read_file:
         msg_table = json.load(read_file)
-    msg_table[user_id] = {}
-    msg_table[user_id]['group'] = shuffled_group
-    msg_table[user_id]['position'] = 0
+    msg_table[message_id] = {}
+    msg_table[message_id]['group'] = shuffled_group
+    msg_table[message_id]['position'] = 0
     with open(path_to_msg, "w") as data_file:
         json.dump(msg_table, data_file)
+
+def get_queue(message_id):
+    with open(path_to_msg, "r") as read_file:
+        msg_table = json.load(read_file)
+
+    if message_id in msg_table:
+        return msg_table[message_id]
+    else:
+        return {"-1": "Добавьте людей в очередь!"}
+
+def add_to_queu(priority_n_name_to_add, message_id):
+    with open(path_to_msg, "r") as read_file:
+        msg_table = json.load(read_file)
+
+    if message_id in msg_table:
+        group = msg_table[message_id]['group']
+        new_id = priority_n_name_to_add.find(" ")
+        new_priority = priority_n_name_to_add.find(" ")
+        name_to_check = priority_n_name_to_add[new_id + 1:]
+        to_delete = ""
+        for name in group:
+            id = name.find(" ")
+            priority = name[:id]
+            name_ch = name[id + 1:]
+            if name_to_check == name_ch:
+                to_delete = name
+
+        if to_delete!="":
+            group.remove(to_delete)
+
+        if to_delete!=priority_n_name_to_add:
+            group.append(priority_n_name_to_add)
+    else:
+        msg_table[message_id] = {}
+        msg_table[message_id]['group'] = [priority_n_name_to_add]
+        msg_table[message_id]['position'] = 0
+    with open(path_to_msg, "w") as data_file:
+        json.dump(msg_table, data_file)
+    return msg_table[message_id]
 
 
 def del_queue(message_id):
